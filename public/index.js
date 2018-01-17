@@ -31,7 +31,8 @@ var deliveries = [{
   'distance': 100,
   'volume': 4,
   'options': {
-    'deductibleReduction': false
+    'deductibleReduction': false,
+    'deductibleamount': 0
   },
   'price': 0,
   'commission': {
@@ -47,7 +48,8 @@ var deliveries = [{
   'distance': 650,
   'volume': 12,
   'options': {
-    'deductibleReduction': true
+    'deductibleReduction': true,
+    'deductibleamount': 0
   },
   'price': 0,
   'commission': {
@@ -62,7 +64,8 @@ var deliveries = [{
   'distance': 1250,
   'volume': 30,
   'options': {
-    'deductibleReduction': true
+    'deductibleReduction': true,
+    'deductibleamount': 0
   },
   'price': 0,
   'commission': {
@@ -146,7 +149,7 @@ const actors = [{
 }];
 
 // first step
-function GetInfo( truckerId){
+function GetInfo(truckerId){
   for(var i=0; i<truckers.length; i++){
     if(truckerId==truckers[i].id){
       return [truckers[i].pricePerKm, truckers[i].pricePerVolume];
@@ -154,43 +157,65 @@ function GetInfo( truckerId){
   }
 }
 
-function SetPrice() {
-  for(var i= 0; i<deliveries.length; i++){
-      var infos= GetInfo(deliveries[i].truckerId)
-      deliveries[i].price= infos[0]*deliveries[i].distance +infos[1]*deliveries[i].volume
-      if(deliveries[i].volume>=5 && deliveries[i].volume<10){
-        deliveries[i].price=deliveries[i].price-(10*deliveries[i].price/100);
-      }
-      else if(deliveries[i].volume>=10 && deliveries[i].volume<25) {
-        deliveries[i].price=deliveries[i].price-(30*deliveries[i].price/100);
-      }
-      else if(deliveries[i].volume>=25 ){
-        deliveries[i].price=deliveries[i].price-(50*deliveries[i].price/100);
-      }
-      var commission= 30*deliveries[i].price/100;
-      deliveries[i].commission.insurance=commission/2;
 
-      var dis= deliveries[i].distance;
-      while(dis>500){
-         deliveries[i].commission.treasury= deliveries[i].commission.treasury+1
-         dis=dis-500
+// Second step
+function SetPrice(delivery){
+      var infos= GetInfo(delivery.truckerId)
+      delivery.price= infos[0]*delivery.distance +infos[1]*delivery.volume;
+      if(delivery.volume>=5 && delivery.volume<10){
+        delivery.price=infos[0]*0.9*delivery.distance +infos[1]*delivery.volume;
       }
-
-      deliveries[i].commission.convargo= commission - deliveries[i].commission.insurance - deliveries[i].commission.treasury;
+      else if(delivery.volume>=10 && delivery.volume<25) {
+        delivery.price=infos[0]*0.7*delivery.distance +infos[1]*delivery.volume;
+      }
+      else if(delivery.volume>=25 ){
+        delivery.price=infos[0]*0.5*delivery.distance +infos[1]*delivery.volume;
+      }
+      else {
+         delivery.price= infos[0]*delivery.distance +infos[1]*delivery.volume;
+      }
+    }
 
 
-  }
+
+//third step
+function SetComission(delivery){
+    var commission=delivery.price*30/100;
+        delivery.commission.insurance=commission/2;
+        var distKm= delivery.distance;
+        while(distKm>500){
+           delivery.commission.treasury= delivery.commission.treasury+1;
+           distKm=distKm-500;
+        }
+
+        delivery.commission.convargo= commission - delivery.commission.insurance - delivery.commission.treasury;
+    }
+
+
+
+//fourth step
+function UpdateOption(delivery){
+   if(delivery.options.deductibleReduction==true){
+       delivery.options.deductibleamount=200
+       delivery.price=delivery.price+delivery.options.deductibleamount;
+       SetComission(delivery);
+       delivery.commission.convargo= delivery.commission.convargo+delivery.volume;
+      }
+     else{
+        deliveries[i].options.deductibleamount=1000
+        delivery.price=delivery.price+delivery.options.deductibleamount;
+        SetComission(delivery);
+       }
+
+   }
+
+
+
+
+for( var i=0; i<deliveries.length; i++){
+  SetPrice(deliveries[i]);
+  UpdateOption(deliveries[i]);
 }
-
-
-
-
-
-
-// second step
-
-
-SetPrice();
 
 console.log(truckers);
 console.log(deliveries);
