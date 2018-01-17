@@ -101,7 +101,7 @@ const actors = [{
     'amount': 0
   }]
 }, {
-  'rentalId': '65203b0a-a864-4dea-81e2-e389515752a8',
+  'deliveryId': '65203b0a-a864-4dea-81e2-e389515752a8',
   'payment': [{
     'who': 'shipper',
     'type': 'debit',
@@ -124,7 +124,7 @@ const actors = [{
     'amount': 0
   }]
 }, {
-  'rentalId': '94dab739-bd93-44c0-9be1-52dd07baa9f6',
+  'deliveryId': '94dab739-bd93-44c0-9be1-52dd07baa9f6',
   'payment': [{
     'who': 'shipper',
     'type': 'debit',
@@ -198,23 +198,59 @@ function UpdateOption(delivery){
    if(delivery.options.deductibleReduction==true){
        delivery.options.deductibleamount=200
        delivery.price=delivery.price+delivery.options.deductibleamount;
-       SetComission(delivery);
        delivery.commission.convargo= delivery.commission.convargo+delivery.volume;
       }
      else{
         deliveries[i].options.deductibleamount=1000
         delivery.price=delivery.price+delivery.options.deductibleamount;
-        SetComission(delivery);
+
        }
 
    }
 
 
 
+//fifith step
+function UpdateBill(delivery){
+    for(var i=0; i<actors.length; i++){
+      if(delivery.id==actors[i].deliveryId){
+        for(var j=0; j<actors[i].payment.length; j++){
+          if(actors[i].payment[j].who=="shipper"){
+              actors[i].payment[j].amount=delivery.price;
+          }
+          else if(actors[i].payment[j].who=="trucker"){
+            actors[i].payment[j].amount=delivery.price-0,3*delivery.price;
+          }
+          else if(actors[i].payment[j].who=="insurance"){
+            actors[i].payment[j].amount=delivery.commission.insurance;
+
+          }
+          else if(actors[i].payment[j].who=="treasury"){
+            actors[i].payment[j].amount=delivery.commission.treasury;
+
+          }
+          else if(actors[i].payment[j].who=="convargo"){
+            actors[i].payment[j].amount=delivery.commission.convargo;
+
+          }
+        }
+      }
+      else{
+        i++
+      }
+
+    }
+}
+
+
+
+
 
 for( var i=0; i<deliveries.length; i++){
   SetPrice(deliveries[i]);
+  SetComission(deliveries[i]);
   UpdateOption(deliveries[i]);
+  UpdateBill(deliveries[i]);
 }
 
 console.log(truckers);
