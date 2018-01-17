@@ -141,6 +141,24 @@ const actors = [{
   }]
 }];
 
+function GetInfo( truckerId){
+  for(var i=0; i<truckers.length; i++){
+    if(truckerId==truckers[i].id){
+      return [truckers[i].pricePerKm, truckers[i].pricePerVolume];
+    }
+  }
+}
+
+
+function SetPrice() {
+  for(var i= 0; i<deliveries.length; i++){
+      var infos= GetInfo(deliveries[i].truckerId)
+      deliveries[i].price= infos[0]*deliveries[i].distance +infos[1]*deliveries[i].volume
+  }
+}
+
+SetPrice();
+
 console.log(truckers);
 console.log(deliveries);
 console.log(actors);
