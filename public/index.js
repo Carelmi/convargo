@@ -36,7 +36,9 @@ var deliveries = [{
   'price': 0,
   'commission': {
     'insurance': 0,
-    'convargo': 0
+    'convargo': 0,
+    'treasury': 0
+
   }
 }, {
   'id': '65203b0a-a864-4dea-81e2-e389515752a8',
@@ -50,7 +52,8 @@ var deliveries = [{
   'price': 0,
   'commission': {
     'insurance': 0,
-    'convargo': 0
+    'convargo': 0,
+    'treasury': 0
   }
 }, {
   'id': '94dab739-bd93-44c0-9be1-52dd07baa9f6',
@@ -64,7 +67,8 @@ var deliveries = [{
   'price': 0,
   'commission': {
     'insurance': 0,
-    'convargo': 0
+    'convargo': 0,
+    'treasury': 0
   }
 }];
 
@@ -163,8 +167,25 @@ function SetPrice() {
       else if(deliveries[i].volume>=25 ){
         deliveries[i].price=deliveries[i].price-(50*deliveries[i].price/100);
       }
+      var commission= 30*deliveries[i].price/100;
+      deliveries[i].commission.insurance=commission/2;
+
+      var dis= deliveries[i].distance;
+      while(dis>500){
+         deliveries[i].commission.treasury= deliveries[i].commission.treasury+1
+         dis=dis-500
+      }
+
+      deliveries[i].commission.convargo= commission - deliveries[i].commission.insurance - deliveries[i].commission.treasury;
+
+
   }
 }
+
+
+
+
+
 
 // second step
 
