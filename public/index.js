@@ -141,6 +141,7 @@ const actors = [{
   }]
 }];
 
+// first step
 function GetInfo( truckerId){
   for(var i=0; i<truckers.length; i++){
     if(truckerId==truckers[i].id){
@@ -149,13 +150,24 @@ function GetInfo( truckerId){
   }
 }
 
-
 function SetPrice() {
   for(var i= 0; i<deliveries.length; i++){
       var infos= GetInfo(deliveries[i].truckerId)
       deliveries[i].price= infos[0]*deliveries[i].distance +infos[1]*deliveries[i].volume
+      if(deliveries[i].volume>=5 && deliveries[i].volume<10){
+        deliveries[i].price=deliveries[i].price-(10*deliveries[i].price/100);
+      }
+      else if(deliveries[i].volume>=10 && deliveries[i].volume<25) {
+        deliveries[i].price=deliveries[i].price-(30*deliveries[i].price/100);
+      }
+      else if(deliveries[i].volume>=25 ){
+        deliveries[i].price=deliveries[i].price-(50*deliveries[i].price/100);
+      }
   }
 }
+
+// second step
+
 
 SetPrice();
 
