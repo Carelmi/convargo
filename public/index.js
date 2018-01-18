@@ -84,7 +84,7 @@ const actors = [{
     'type': 'debit',
     'amount': 0
   }, {
-    'who': 'owner',
+    'who': 'trucker',
     'type': 'credit',
     'amount': 0
   }, {
@@ -102,12 +102,13 @@ const actors = [{
   }]
 }, {
   'deliveryId': '65203b0a-a864-4dea-81e2-e389515752a8',
+
   'payment': [{
     'who': 'shipper',
     'type': 'debit',
     'amount': 0
   }, {
-    'who': 'owner',
+    'who': 'trucker',
     'type': 'credit',
     'amount': 0
   }, {
@@ -130,7 +131,7 @@ const actors = [{
     'type': 'debit',
     'amount': 0
   }, {
-    'who': 'owner',
+    'who': 'trucker',
     'type': 'credit',
     'amount': 0
   }, {
@@ -148,7 +149,7 @@ const actors = [{
   }]
 }];
 
-// first step
+//first step
 function GetInfo(truckerId){
   for(var i=0; i<truckers.length; i++){
     if(truckerId==truckers[i].id){
@@ -158,18 +159,18 @@ function GetInfo(truckerId){
 }
 
 
-// Second step
+
 function SetPrice(delivery){
       var infos= GetInfo(delivery.truckerId)
       delivery.price= infos[0]*delivery.distance +infos[1]*delivery.volume;
       if(delivery.volume>=5 && delivery.volume<10){
-        delivery.price=infos[0]*0.9*delivery.distance +infos[1]*delivery.volume;
+        delivery.price=infos[0]*delivery.distance +infos[1]*0.9*delivery.volume;
       }
       else if(delivery.volume>=10 && delivery.volume<25) {
-        delivery.price=infos[0]*0.7*delivery.distance +infos[1]*delivery.volume;
+        delivery.price=infos[0]*delivery.distance +infos[1]*0.7*delivery.volume;
       }
       else if(delivery.volume>=25 ){
-        delivery.price=infos[0]*0.5*delivery.distance +infos[1]*delivery.volume;
+        delivery.price=infos[0]*delivery.distance +infos[1]*0.5*delivery.volume;
       }
       else {
          delivery.price= infos[0]*delivery.distance +infos[1]*delivery.volume;
@@ -183,7 +184,7 @@ function SetComission(delivery){
     var commission=delivery.price*30/100;
         delivery.commission.insurance=commission/2;
         var distKm= delivery.distance;
-        while(distKm>500){
+        while(distKm>0){
            delivery.commission.treasury= delivery.commission.treasury+1;
            distKm=distKm-500;
         }
@@ -197,12 +198,12 @@ function SetComission(delivery){
 function UpdateOption(delivery){
    if(delivery.options.deductibleReduction==true){
        delivery.options.deductibleamount=200
-       delivery.price=delivery.price+delivery.options.deductibleamount;
+       delivery.price= delivery.price+delivery.volume;
        delivery.commission.convargo= delivery.commission.convargo+delivery.volume;
       }
      else{
-        deliveries[i].options.deductibleamount=1000
-        delivery.price=delivery.price+delivery.options.deductibleamount;
+        delivery.options.deductibleamount=1000
+
 
        }
 
@@ -219,7 +220,7 @@ function UpdateBill(delivery){
               actors[i].payment[j].amount=delivery.price;
           }
           else if(actors[i].payment[j].who=="trucker"){
-            actors[i].payment[j].amount=delivery.price-0,3*delivery.price;
+               actors[i].payment[j].amount=delivery.price-0.3*delivery.price;
           }
           else if(actors[i].payment[j].who=="insurance"){
             actors[i].payment[j].amount=delivery.commission.insurance;
@@ -235,10 +236,6 @@ function UpdateBill(delivery){
           }
         }
       }
-      else{
-        i++
-      }
-
     }
 }
 
